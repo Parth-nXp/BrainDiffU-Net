@@ -6,40 +6,53 @@ This repository implements **BrainDiffU-Net**, a decentralized learning framewor
 
 The project is divided into five main scripts:
 
-### 1. `dataset.py`
-   - **Purpose**: Defines the `BrainMRIDataset` class for loading and preprocessing brain MRI images and their corresponding masks.
-   - **Key Functionality**:
-     - `__getitem__()`: Loads an MRI image and its corresponding mask, applies preprocessing (resizing and normalization), and converts them to PyTorch tensors.
-     - `__len__()`: Returns the total number of samples (image-mask pairs).
+### 1. `data_utils.py`
+- **Purpose**: Handles dataset distribution across decentralized nodes.
+- **Key Features**:
+  - `split_data_into_nodes`: Splits the dataset into subsets for each node to simulate a decentralized environment.
+  - Ensures balanced data distribution while redistributing leftover samples to the last node.
        
-### 2. `model.py`
-   - **Purpose**: Implements the U-Net architecture, a widely used model for segmentation tasks.
-   - **Key Functionality**:
-     - Encoder-decoder architecture with skip connections for better spatial detail retention.
-     - `forward()` method that processes the input through the encoder, bottleneck, and decoder to produce segmentation maps.
+### 2. `dataset.py`
+- **Purpose**: Defines the `BrainMRIDataset` class for loading and preprocessing MRI images and segmentation masks.
+- **Key Features**:
+  - `__getitem__`: Loads an MRI image and its mask, applies preprocessing (resizing and normalization), and converts them into PyTorch tensors.
+  - `__len__`: Returns the total number of samples in the dataset.
+  - Supports augmentations using `transforms`.
+
+### 3. `model.py`
+- **Purpose**: Implements the U-Net architecture for segmentation tasks.
+- **Key Features**:
+  - Encoder-decoder structure with skip connections to preserve spatial details.
+  - `conv_block` for convolutional operations and `forward()` for the model's forward pass.
+
+### 4. `training.py`
+- **Purpose**: Contains the `train_node_model` function to train individual node models in a decentralized setup.
+- **Key Features**:
+  - Implements the training loop with loss calculation, backpropagation, and optimizer updates.
+  - Tracks metrics like Dice Coefficient and IoU during training.
+  - Supports learning rate scheduling for improved convergence.
+
+### 5. `metrics.py`
+- **Purpose**: Defines metrics for evaluating segmentation quality.
+- **Key Features**:
+  - `dice_coefficient`: Computes the Dice Similarity Coefficient to measure overlap between predicted and ground truth masks.
+  - `iou`: Calculates Intersection over Union for segmentation accuracy.
+
+### 6. `utils.py`
+- **Purpose**: Provides utility functions for reproducibility and device initialization.
+- **Key Features**:
+  - `set_seed`: Ensures reproducibility across different runs by setting seeds for NumPy and PyTorch.
+  - `initialize_device`: Detects available GPUs or defaults to CPU for training.
+
+### 7. `main.py`
+- **Purpose**: Serves as the main script to integrate all components of the framework.
+- **Key Features**:
+  - Loads and preprocesses the dataset, splitting it across nodes.
+  - Initializes U-Net models, optimizers, schedulers, and DataLoaders.
+  - Orchestrates decentralized training with a diffusion process for collaborative learning.
+  - Supports multi-GPU training via `DataParallel`.
 
 
-### 3. `training.py`
-   - **Purpose**: Contains the `train_node_model()` function to train individual models at each decentralized node.
-   - **Key Functionality**:
-     - Performs training with loss calculation and backpropagation.
-     - Tracks metrics such as the Dice coefficient and IoU during each epoch.
-     - Implements learning rate scheduling for better convergence.
-
-### 4. `evaluate.py`
-   - **Purpose**: Contains the `evaluate_model()` function to visualize the performance of the trained U-Net model on the test dataset.
-   - **Key Functionality**:
-     - **Visualization**: For a random batch of images from the test set, the original MRI image, the ground truth segmentation mask, and the predicted segmentation mask are displayed side by side. This allows qualitative assessment of the model's performance on unseen data.
-     - **Inference**: The model is put into evaluation mode `(model.eval())`, and predictions are generated without gradient computation for efficiency.
-
-
-### 5. `main.py`
-   - **Purpose**: Serves as the main entry point for the project, integrating dataset loading, model training, and model evaluation into one cohesive pipeline.
-   - **Key Functionality**:
-     - **Dataset Preparation**: Loads the dataset and splits it into training and testing sets. Applies necessary transformations like data augmentation for training.
-     - **Model Initialization**: Instantiates the U-Net model, optimizer, and learning rate scheduler.
-     - **Training and Validation**: Trains the model using the `train_model()` function and tracks the model’s performance on the validation set.
-     - **Evaluation**: After training, the model is evaluated using the `evaluate_model()` function, which visualizes predictions on the test set.
 
 The dataset used in this project comes from two key sources:
 
@@ -61,14 +74,14 @@ This dataset contains brain MR images together with manual FLAIR abnormality seg
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/BrainSegNet.git
+    git clone https://github.com/your-username/BrainDiffU-Net.git
     cd BrainSegNet
     ```
 
 2. Create a virtual environment and activate it:
     ```bash
-    python -m venv brainseg-env
-    source brainseg-env/bin/activate  # On Windows use `brainseg-env\Scripts\activate`
+    python -m venv braindiffunet-env
+    source braindiffunet-env/bin/activate  # On Windows use `braindiffunet-env\Scripts\activate`
     ```
 
 3. Install the required packages:
@@ -80,25 +93,18 @@ This dataset contains brain MR images together with manual FLAIR abnormality seg
 
 ### 1. Train the model
 
-Run the `main.py` script to start training the U-Net model:
-```bash
+Run the main.py script to start the decentralized training process:
+
+```
 python main.py
 ```
-
-This will:
-- Load the brain MRI images and masks.
-- Train the U-Net model on the training dataset.
-- Save the trained model weights (model.pth) in the working directory.
   
 ### 2. Evaluate the model
-After training, evaluate the model by running the same `main.py` script:
-```
-python main.py
-```
+After training, update the evaluation section in `main.py` to visualize predictions:
 
-The evaluation part of the script will:
-- Load the saved model weights.
-- Visualize the original image, the ground truth mask, and the predicted mask for comparison.
+- Input MRI images
+- Ground truth masks
+- Predicted masks
 
 ## Troubleshooting
 
