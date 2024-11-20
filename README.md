@@ -75,7 +75,7 @@ This dataset contains brain MR images together with manual FLAIR abnormality seg
 1. Clone the repository:
     ```bash
     git clone https://github.com/your-username/BrainDiffU-Net.git
-    cd BrainSegNet
+    cd BrainDiffU-Net
     ```
 
 2. Create a virtual environment and activate it:
