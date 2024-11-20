@@ -1,4 +1,4 @@
-# BrainDiffU-Net: Decentralized Brain MRI Segmentation with U-Net in PyTorch
+# BrainDiffU-Net: A Distributed Diffusion-Based U-Net for Brain Tumor Segmentation
 
 This repository implements **BrainDiffU-Net**, a decentralized learning framework based on the U-Net architecture for segmenting brain MRI images. It integrates privacy-preserving diffusion techniques to ensure compliance with data privacy regulations, making it suitable for medical image analysis tasks such as brain tumor segmentation.
 
